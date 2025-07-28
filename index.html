@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" href="https://static.vecteezy.com/system/resources/thumbnails/023/630/280/small_2x/human-brain-with-transparent-background-png.png">
+  <link rel="icon"
+    href="https://static.vecteezy.com/system/resources/thumbnails/023/630/280/small_2x/human-brain-with-transparent-background-png.png">
   <title>Luyện Tính Nhanh</title>
   <style>
     body {
@@ -13,29 +15,34 @@
       padding: 20px;
       color: #333;
     }
+
     .container {
       border: 5px dashed #fff;
       padding: 30px;
       border-radius: 20px;
       background: #fdfbfb;
-      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
       max-width: 800px;
       margin: auto;
     }
+
     h1 {
       color: #f72585;
       font-size: 3em;
       margin-bottom: 20px;
     }
+
     #question {
       font-size: 2em;
       margin: 20px 0;
     }
+
     input[type="text"] {
       font-size: 1.5em;
       padding: 10px;
       width: 200px;
     }
+
     button {
       font-size: 1.2em;
       padding: 10px 20px;
@@ -45,18 +52,22 @@
       border-radius: 10px;
       cursor: pointer;
     }
+
     #result {
       margin-top: 20px;
       font-size: 1.2em;
     }
+
     #retryBtn {
       display: none;
     }
+
     .wrong {
       color: red;
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h1>Luyện Tính Nhanhhhhhh</h1>
@@ -82,78 +93,112 @@
     let current = 0, startTime, timerInterval;
 
     function startGame() {
+      generateQuestions(); // 🟢 Đảm bảo câu hỏi được sinh ra trước khi bắt đầu
+      if (questions.length < 100) {
+        alert("Chưa có đủ 100 câu hỏi để bắt đầu!");
+        return;
+      }
+
       document.getElementById("startBtn").style.display = "none";
       document.getElementById("intro").style.display = "none";
       document.getElementById("game").style.display = "block";
-      generateQuestions();
+      current = 0;
       showQuestion();
-      startTime = Date.now();
+
+      startTime = Date.now(); // 🟢 Ghi lại thời điểm bắt đầu
       timerInterval = setInterval(() => {
         document.getElementById("timer").innerText = Math.floor((Date.now() - startTime) / 1000);
       }, 1000);
     }
 
+    const formatOperand = (n) => n < 0 ? `(${n})` : `${n}`;
+
     function generateQuestions() {
+      questions = [];
+      answers = [];
+      userAnswers = [];
       const add = (q, a) => { questions.push(q); answers.push(a); }
       const rand = (min, max, step = 1) => min + step * Math.floor(Math.random() * ((max - min) / step + 1));
 
       for (let i = 0; i < 10; i++) {
-        let a = rand(-8, 8, 2), b = rand(-8, 8, 2);
+        let a = rand(-99, 99, 2), b = rand(-99, 99, 2);
         let op = Math.random() < 0.5 ? '+' : '-';
-        add(`${a} ${op} ${b}`, op === '+' ? a + b : a - b);
+        add(`${a} ${op} ${formatOperand(b)}`, op === '+' ? a + b : a - b);
       }
       for (let i = 0; i < 10; i++) {
         if (Math.random() < 0.5) {
-          let a = rand(2, 8), b = rand(2, 8);
-          add(`${a} × ${b}`, a * b);
+          let a = rand(-9, 9), b = rand(-9, 9);
+          add(`${a} × ${formatOperand(b)}`, a * b);
         } else {
-          let b = rand(2, 8);
-          let a = b * rand(2, 8);
-          add(`${a} ÷ ${b}`, a / b);
+          let b = rand(-9, 9);
+          while (b === 0) b = rand(-9, 9);
+          let a = b * rand(-9, 9);
+          add(`${a} ÷ ${formatOperand(b)}`, a / b);
         }
       }
-      for (let i = 0; i < 20; i++) {
-        let a = rand(-80, 80, 10), b = rand(-80, 80, 10);
-        let op = Math.random() < 0.5 ? '+' : '-';
-        add(`${a} ${op} ${b}`, op === '+' ? a + b : a - b);
-      }
+
       for (let i = 0; i < 10; i++) {
         let choice = rand(1, 3);
-        if (choice === 1) { let x = rand(2, 6); add(`${x}²`, x * x); }
-        else if (choice === 2) { let x = rand(2, 4); add(`${x}³`, x ** 3); }
-        else { let roots = [1,4,9,16,25,36,49,64,81,100]; let x = roots[rand(0, roots.length - 1)]; add(`√${x}`, Math.sqrt(x)); }
+        if (choice === 1) { let x = rand(-13, 13); add(`${x}²`, x * x); }
+        else if (choice === 2) { let x = rand(-5, 5); add(`${x}³`, x ** 3); }
+        else {
+          let roots = [1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169];
+          let x = roots[rand(0, roots.length - 1)];
+          add(`√${x}`, Math.sqrt(x));
+        }
+      }
+
+      for (let i = 0; i < 20; i++) {
+        let a = rand(-999, 999), b = rand(-999, 999);
+        let op = Math.random() < 0.5 ? '+' : '-';
+        add(`${a} ${op} ${formatOperand(b)}`, op === '+' ? a + b : a - b);
       }
       for (let i = 0; i < 10; i++) {
-        let a = rand(-900, 900, 50), b = rand(-900, 900, 50);
+        let a = rand(-9999, 9999), b = rand(-9999, 9999);
         let op = Math.random() < 0.5 ? '+' : '-';
-        add(`${a} ${op} ${b}`, op === '+' ? a + b : a - b);
+        add(`${a} ${op} ${formatOperand(b)}`, op === '+' ? a + b : a - b);
       }
+
       for (let i = 0; i < 10; i++) {
-        let base = [100, 1000];
-        let unit = base[rand(0, base.length - 1)];
-        let a = rand(1000, 99999 / unit) * unit;
-        let b = rand(1000, 99999 / unit) * unit;
+        let a = rand(-99999, 99999);
+        let b = rand(-99999, 99999);
         let op = Math.random() < 0.5 ? '+' : '-';
-        add(`${a} ${op} ${b}`, op === '+' ? a + b : a - b);
+        add(`${a} ${op} ${formatOperand(b)}`, op === '+' ? a + b : a - b);
       }
-      for (let i = 0; i < 5; i++) { let a = rand(10, 200, 10); add(`${a} × 11`, a * 11); }
-      for (let i = 0; i < 5; i++) { let a = rand(10, 100, 10); let b = rand(2, 9) * 10; add(`${a} × ${b}`, a * b); }
+
+      for (let i = 0; i < 5; i++) { let a = rand(1, 999); add(`${a} × 11`, a * 11); }
+      for (let i = 0; i < 5; i++) { let a = rand(10, 99); let b = rand(10, 99); add(`${a} × ${b}`, a * b); }
+
       for (let i = 0; i < 10; i++) {
-        let a = (rand(-1000, 1000, 25) / 100).toFixed(2);
-        let b = (rand(-1000, 1000, 25) / 100).toFixed(2);
+        let a = (rand(-100000, 100000) / 1000).toFixed(3);
+        let b = (rand(-100000, 100000) / 1000).toFixed(3);
         let op = Math.random() < 0.5 ? '+' : '-';
-        add(`${a} ${op} ${b}`, +(op === '+' ? (+a) + (+b) : (+a) - (+b)).toFixed(2));
+        add(`${a} ${op} ${formatOperand(b)}`, +(op === '+' ? (+a) + (+b) : (+a) - (+b)).toFixed(2));
       }
-      for (let i = 0; i < 5; i++) {
-        let a = (rand(10, 100, 5) / 10).toFixed(1);
-        let b = [0.1, 0.01, 10, 100][rand(0, 3)];
-        add(`${a} × ${b}`, +(a * b).toFixed(2));
+
+      // Các câu hỏi làm tròn
+      for (let i = 0; i < 10; i++) {
+        let x = +(rand(-1000000, 1000000) / 1000).toFixed(3); // ép về số
+        let type = rand(0, 4); // 0: phần trăm, 1: phần chục, 2: đơn vị, 3: chục, 4: trăm
+
+        let placeName = ['phần trăm', 'phần chục', 'đơn vị', 'chục', 'trăm'][type];
+        let rounded;
+
+        if (type === 0) {
+          // Làm tròn tới 2 chữ số sau dấu phẩy
+          rounded = Math.round(x * 100) / 100;
+        } else if (type === 1) {
+          // Làm tròn tới 1 chữ số sau dấu phẩy
+          rounded = Math.round(x * 10) / 10;
+        } else {
+          // Làm tròn tới đơn vị, chục, trăm
+          let factor = Math.pow(10, type - 2);
+          rounded = Math.round(x / factor) * factor;
+        }
+
+        add(`Làm tròn số ${x} tới hàng ${placeName}`, rounded);
       }
-      for (let i = 0; i < 5; i++) {
-        let b = rand(1, 9) * 10;
-        let a = b * rand(5, 20);
-        add(`${a} ÷ ${b}`, a / b);
-      }
+
     }
 
     function showQuestion() {
@@ -202,9 +247,9 @@
       document.getElementById("result").innerHTML = output;
       document.getElementById("retryBtn").style.display = "inline-block";
       document.getElementById("game").style.display = "none";
-
-      //hello
     }
   </script>
+
 </body>
+
 </html>
